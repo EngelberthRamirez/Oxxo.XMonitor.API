@@ -2,6 +2,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using WebApi.Filters;
 
@@ -50,6 +51,12 @@ public static class DependencyInjection
         {
             client.BaseAddress = new Uri(configuration["Environments:ProxyHub"]!);
         });
+
+        services.AddHttpClient<ILoggingHelper, LoggingHelper>(client =>
+        {
+            //client.BaseAddress = new Uri(configuration["LoggingOptions:ServiceUrl"]!);
+        });
+        services.Configure<LoggingOptions>(configuration.GetSection("LoggingOptions"));
 
         services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 
