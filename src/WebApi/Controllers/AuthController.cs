@@ -20,8 +20,8 @@ namespace WebApi.Controllers
         public Task<TokenCommandResponse> Token([FromBody] TokenCommand command) =>
             _mediator.Send(command);
 
-        [HttpGet("test")]
-        public IActionResult Test()
+        [HttpGet("isalive")]
+        public IActionResult IsAlive()
         {
             return Ok("API is working!");
         }
