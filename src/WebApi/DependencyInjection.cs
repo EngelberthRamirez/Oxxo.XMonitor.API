@@ -2,7 +2,6 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using WebApi.Filters;
 
@@ -42,6 +41,8 @@ public static class DependencyInjection
                     Array.Empty<string>()
                 }
             });
+
+            c.CustomSchemaIds(type => type.FullName.Replace("+", "."));
         });
 
         services.AddControllers(options =>

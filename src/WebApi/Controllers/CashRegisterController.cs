@@ -10,16 +10,16 @@ namespace WebApi.Controllers;
 [Route("api/[controller]")]
 public class CashRegisterController(IMediator mediator) : ControllerBase
 {
+
     /// <summary>
     /// Envia al proxy llamar un comando para reiniciar la caja
     /// </summary>
     /// <param name="queryParams"></param>
     /// <returns></returns>
-    [HttpGet]
-    [Route("reboot")]
-    public async Task<IActionResult> RebootCashRegister([FromQuery] RebootCashRegisterCommandParameters queryParams)
+    [HttpGet("reboot")]
+    public async Task<IActionResult> RebootCashRegister([FromQuery] RebootCashRegister.Request queryParams)
     {
-        await mediator.Send(new RebootCashRegisterCommand { Parameters = queryParams });
+        await mediator.Send(new RebootCashRegister.Command { Parameters = queryParams });
         return Ok();
     }
 }
