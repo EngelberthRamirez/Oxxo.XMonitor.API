@@ -46,15 +46,15 @@ public class GetConfigToWatch
             try
             {
                 var files = await connection.QueryAsync<FilesToWatch>(
-                    @"SELECT cd.FileName AS File, cd.Path, cd.Name, cd.AddToWatch, cd.DynamicCategory AS ItemType
-                      FROM Configs s
-                      JOIN ConfigDetails cd ON s.Id = cd.ConfigId
+                    @"SELECT cd.FileName AS 'File', cd.Path, cd.Name, cd.AddToWatch, cd.DynamicCategory AS ItemType
+                      FROM Config s
+                      JOIN ConfigDetail cd ON s.Id = cd.ConfigId
                       WHERE s.Descripcion = 'Default' AND cd.AddToWatch = 1 AND cd.DynamicCategory != 4"
                 );
 
                 var events = await connection.QueryAsync<EventsLogToWatch>(
                     @"SELECT n.Id, n.EventId, n.LogName, n.EntryType, n.Online 
-                      FROM EventsToWatchConfigs n"
+                      FROM EventsToWatchConfig n"
                 );
 
                 var configToWatch = new Response
