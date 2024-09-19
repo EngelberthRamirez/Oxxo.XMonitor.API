@@ -1,7 +1,9 @@
 ﻿using System.Reflection;
 using System.Text;
+using ApplicationCore.Common.Abstractions.Caching;
 using ApplicationCore.Common.Abstractions.Data;
 using ApplicationCore.Common.Behaviours;
+using ApplicationCore.Infrastructure.Caching;
 using ApplicationCore.Infrastructure.Persistence;
 using ApplicationCore.Infrastructure.Persistence.Context;
 using FluentValidation;
@@ -21,6 +23,7 @@ public static class DependencyInjection
         {
             config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
             config.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+            config.AddOpenBehavior(typeof(QueryCachingPipeLineBehavior<,>));
         });
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
@@ -32,7 +35,9 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("defaultConnection")));
         services.AddTransient<IDbConnectionFactory, SqlConnectionFactory>();
+        services.AddScoped<ITransactionHelper, TransactionHelper>();
         services.AddMemoryCache();
+        services.AddSingleton<ICacheService, CacheService>();
         return services;
     }
 
