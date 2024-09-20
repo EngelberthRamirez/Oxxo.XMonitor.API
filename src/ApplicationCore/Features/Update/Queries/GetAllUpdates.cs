@@ -35,31 +35,39 @@ namespace ApplicationCore.Features.Update.Queries
         {
             private readonly IDbConnectionFactory _dbConnectionFactory;
             private readonly ILogger<Handler> _logger;
+            private readonly ITransactionHelper _transactionHelper;
 
-            public Handler(IDbConnectionFactory dbConnectionFactory, ILogger<Handler> logger)
+            public Handler(IDbConnectionFactory dbConnectionFactory, ILogger<Handler> logger, ITransactionHelper transactionHelper)
             {
                 _dbConnectionFactory = dbConnectionFactory;
                 _logger = logger;
+                _transactionHelper = transactionHelper;
             }
 
             public async Task<List<Response>> Handle(Query request, CancellationToken cancellationToken)
             {
-                using IDbConnection connection = _dbConnectionFactory.CreateConnection("defaultConnection");
-
                 try
                 {
-                    var result = await connection.QueryAsync<Response>(
-                        "GetAvailableUpdates",
-                        new { 
-                            StoreName = request.StoreName,
-                            Type = 1,
-                            TaskId = 0,
-                            StoreDataId = request.StoreDataId,
-                        },
-                        commandType: CommandType.StoredProcedure
-                    );
+                    using IDbConnection connection = _dbConnectionFactory.CreateConnection("defaultConnection");
+                    connection.Open();
+                
+                    return await _transactionHelper.ExecuteInTransactionAsync(connection, async transaction =>
+                    {
+                        var result = await connection.QueryAsync<Response>(
+                            "GetAvailableUpdates",
+                            new
+                            {
+                                StoreName = request.StoreName,
+                                Type = 1,
+                                TaskId = 0,
+                                StoreDataId = request.StoreDataId,
+                            },
+                            commandType: CommandType.StoredProcedure,
+                            transaction: transaction
+                        );
 
-                    return result.ToList();
+                        return result.ToList();
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -67,7 +75,6 @@ namespace ApplicationCore.Features.Update.Queries
                     throw;
                 }
             }
-
         }
     }
 }
