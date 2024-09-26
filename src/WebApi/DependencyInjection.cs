@@ -57,12 +57,16 @@ public static class DependencyInjection
         {
             //client.BaseAddress = new Uri(configuration["LoggingOptions:ServiceUrl"]!);
         });
+
         services.Configure<LoggingOptions>(configuration.GetSection("LoggingOptions"));
 
         services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 
         services.Configure<ApiBehaviorOptions>(options =>
             options.SuppressModelStateInvalidFilter = true);
+
+
+        services.AddTransient<ParameterHelper>();
 
         return services;
     }
