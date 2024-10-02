@@ -8,19 +8,12 @@ namespace WebApi.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class UpdateController : ControllerBase
+public class UpdateController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public UpdateController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpGet, Route("GetAllUpdates/{storeName}/{storeDataId?}")]
     public async Task<IActionResult> GetAllUpdates(string storeName, int storeDataId = 0)
     {
-        var result = await _mediator.Send(new GetAllUpdates.Query
+        var result = await mediator.Send(new GetAllUpdates.Query
         {
             StoreName = storeName,
             StoreDataId = storeDataId
